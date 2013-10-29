@@ -4741,7 +4741,7 @@ Handle<Value> RandomBytes(const Arguments& args) {
     uv_queue_work(uv_default_loop(),
                   &req->work_req_,
                   RandomBytesWork<generator>,
-                  RandomBytesAfter<generator>);
+                  (uv_after_work_cb)RandomBytesAfter<generator>);
 
     return Undefined();
   }
