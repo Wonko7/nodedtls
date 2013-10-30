@@ -65,8 +65,8 @@ function connectToDtlsServer(requestId){
 
     var srcPort = 23233 + requestId;
     //var socket = dtls.connect(8080,"192.168.2.35",options, function() 
-    var socket = dtls.connect(23232,"192.168.2.181",srcPort, options, function() {
-    //var socket = dtls.connect(23232,"192.168.4.15",23231, options, function() {
+    //var socket = dtls.connect(23232,"192.168.2.181",srcPort, options, function() {
+    var socket = dtls.connect(23232,"139.19.186.147",23231, options, function() {
 		console.log('>>>>>>>>>>> dtls.connect callback()');
         if (socket.authorized) {
 			console.log('>>>>>>>>>>> dtls.connect callback() ::> authorized');
