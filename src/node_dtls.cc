@@ -170,8 +170,8 @@ int generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
 
     BIO *pRBio = SSL_get_rbio(ssl);
     BIO *pWBio = SSL_get_wbio(ssl);
-    int iRBio = (unsigned int)pRBio;
-    int iWBio = (unsigned int)pWBio;
+    int iRBio = *(unsigned int*)&pRBio;
+    int iWBio = *(unsigned int*)&pWBio;
     length = 0;
     length += sizeof(iRBio);
     length += sizeof(iWBio);
@@ -265,8 +265,8 @@ int verify_cookie(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
 
     BIO *pRBio = SSL_get_rbio(ssl);
     BIO *pWBio = SSL_get_wbio(ssl);
-    int iRBio = (unsigned int)pRBio;
-    int iWBio = (unsigned int)pWBio;
+    int iRBio = *(unsigned int*)&pRBio;
+    int iWBio = *(unsigned int*)&pWBio;
     length = 0;
     length += sizeof(iRBio);
     length += sizeof(iWBio);
@@ -1225,7 +1225,7 @@ int Connection::SelectSNIContextCallback_(SSL *s, int *ad, void* arg) {
       // XXX There should be an object connected to this that
       // we can attach a domain onto.
       Local<Value> ret;
-      ret = Local<Value>::New(MakeCallback(Context::GetCurrent()->Global(),
+      ret = Local<Value>::New(node::MakeCallback(Context::GetCurrent()->Global(),
                                            callback, ARRAY_SIZE(argv), argv));
 
       // If ret is SecureContext
@@ -1292,7 +1292,7 @@ Handle<Value> Connection::New(const Arguments& args) {
 #endif
 
   SSL_set_bio(p->ssl_, p->bio_read_, p->bio_write_);
-  fprintf(stderr, "Connection::New ::> ctx:[%x], ssl:[%x], rbio:[%x], wbio:[%x]\n", sc->ctx_, p->ssl_, p->bio_read_, p->bio_write_);
+  fprintf(stderr, "Connection::New ::> ctx:[%p], ssl:[%p], rbio:[%p], wbio:[%p]\n", sc->ctx_, p->ssl_, p->bio_read_, p->bio_write_);
   /* Added to support DTLS - Gaffar */
   //{{
   SSL_set_options(p->ssl_, SSL_OP_COOKIE_EXCHANGE);
@@ -1344,7 +1344,7 @@ void Connection::SSLInfoCallback(const SSL *ssl_, int where, int ret) {
     if (onhandshakestart_sym.IsEmpty()) {
       onhandshakestart_sym = NODE_PSYMBOL("onhandshakestart");
     }
-    MakeCallback(c->handle_, onhandshakestart_sym, 0, NULL);
+    node::MakeCallback(c->handle_, onhandshakestart_sym, 0, NULL);
   }
   if (where & SSL_CB_HANDSHAKE_DONE) {
     HandleScope scope;
@@ -1352,7 +1352,7 @@ void Connection::SSLInfoCallback(const SSL *ssl_, int where, int ret) {
     if (onhandshakedone_sym.IsEmpty()) {
       onhandshakedone_sym = NODE_PSYMBOL("onhandshakedone");
     }
-    MakeCallback(c->handle_, onhandshakedone_sym, 0, NULL);
+    node::MakeCallback(c->handle_, onhandshakedone_sym, 0, NULL);
   }
 }
 
@@ -4516,7 +4516,7 @@ EIO_PBKDF2After(uv_work_t* req) {
 
   // XXX There should be an object connected to this that
   // we can attach a domain onto.
-  MakeCallback(Context::GetCurrent()->Global(),
+  node::MakeCallback(Context::GetCurrent()->Global(),
                request->callback,
                ARRAY_SIZE(argv), argv);
 
@@ -4617,7 +4617,7 @@ PBKDF2(const Arguments& args) {
 
   req = new uv_work_t();
   req->data = request;
-  uv_queue_work(uv_default_loop(), req, EIO_PBKDF2, EIO_PBKDF2After);
+  uv_queue_work(uv_default_loop(), req, EIO_PBKDF2, (uv_after_work_cb)EIO_PBKDF2After);
   return Undefined();
 
 err:
@@ -4708,7 +4708,7 @@ void RandomBytesAfter(uv_work_t* work_req) {
 
   // XXX There should be an object connected to this that
   // we can attach a domain onto.
-  MakeCallback(Context::GetCurrent()->Global(),
+  node::MakeCallback(Context::GetCurrent()->Global(),
                req->callback_,
                ARRAY_SIZE(argv), argv);
 
@@ -4738,10 +4738,10 @@ Handle<Value> RandomBytes(const Arguments& args) {
     Local<Function> callback_v = Local<Function>(Function::Cast(*args[1]));
     req->callback_ = Persistent<Function>::New(callback_v);
 
-    uv_queue_work(uv_default_loop(),
+    /*uv_queue_work(uv_default_loop(),
                   &req->work_req_,
                   RandomBytesWork<generator>,
-                  (uv_after_work_cb)RandomBytesAfter<generator>);
+                  (uv_after_work_cb)RandomBytesAfter<generator>);*/
 
     return Undefined();
   }
