@@ -147,9 +147,9 @@ static void dtls_lock_cb(int mode, int n, const char* file, int line) {
 //{{
 
 int generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
-    {
+{
     unsigned char *buffer, result[EVP_MAX_MD_SIZE];
-    unsigned int length = 0, resultlength;
+    unsigned int length, resultlength;
     union {
         struct sockaddr_storage ss;
         struct sockaddr_in6 s6;
