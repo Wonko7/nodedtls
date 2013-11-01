@@ -12,20 +12,11 @@
         'PLATFORM="<(OS)"',
       ],
       
-   'cflags+': [ '-fpermissive',
-                 ],
-   'cflags_cc+': [ '-fpermissive',
-                 ],
-          'include_dirs': [
-            '/home/wjc/work/local/include',
-            '/home/wjc/work/local/include/openssl',
-          ],
-      #'link_settings': {
-      #                    'libraries': [
-      #                        '-L/home/wjc/work/local/lib/', '-lcrypto', '-lssl',
-      #                        # '-L/usr/lib', '-lopenssl',
-      #                    ]
-      #                 },
+	# FIXME: remove hardcoded paths. Gyp can probably tell us how node was compiled and use that.
+      'include_dirs': [
+	      '/home/wjc/work/local/include',
+	      '/home/wjc/work/local/include/openssl',
+	      ],
  # 'conditions': [
  #        [ 'OS=="win"', {
  #          'conditions': [

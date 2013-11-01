@@ -1,51 +1,35 @@
-Steps to use the DTLS library on node.js
-
-****Important******: Copy the libopenssl.a library from node deps folder to /usr/lib/
-
+# Node Dtls
 Supported OS: Linux.
 Author: Sayyad Gaffar.
 Node Version: >= 0.6.0
-Installtion: npm i node_dtls
 
-To test DTLS on Node:
+## Building:
+Node needs to be built against a shared openssl library, nodedtls will use the same.
 
-a) DTLS macros needs to be disabled on openssl configuration file.
-	1) Comment out the macro:
- 
-			#'OPENSSL_NO_DTLS1',
-        		#'OPENSSL_NO_SOCK',
-        		#'OPENSSL_NO_DGRAM',
-				
-			in openssl.gyp  Path: /node directory/deps/openssl/openssl.gyp
-	
-b) Make the changes in openssl as mentioned in the below patch:
+### Environment:
+- `prefix=...`
+- `PATH=$prefix/bin:$prefix/sbin:$prefix/lib/node_modules/npm/bin/node-gyp-bin:$PATH`
+- `export LD_LIBRARY_PATH=$prefix/lib`
 
-			http://cvs.openssl.org/filediff?f=openssl/ssl/s3_pkt.c&v1=1.72.2.7.2.11&v2=1.72.2.7.2.12 
+### Building:
+- OpenSSL:	`./config shared --prefix=$prefix enable-tlsext enable-dtls enable-ssl; make; make install`
+- Node:		`./configure --prefix=$prefix --shared-openssl --shared-openssl-includes $prefix/include --shared-openssl-libpath $prefix/lib; make; make install`
+- nodedtls:	Modify `binding.gyp` to use the correct openssl include files then `node-gyp configure build`
 
-c) Recompile node with the above settings.
-			a) ./configure.
-			b) make
-			c) make install
+### Warnings:
+Today this has only been tested with the following program versions, and only on linux:
+- Node:		v0.10.12-release:a088cf4f930d3928c97d239adf950ab43e7794aa
+- OpenSSl:	1.0.1e
 
-d) Testing the dtls on node
+## Testing the dtls on node
+- In the node_modules folder, find dtls.
+- Inside Demo, one will find the dtlsserver and dtlsclient.
+- Run the dtls Server: dtls/demo/dtlsServer/dtlsController.js  
+- Connect using the dtls client: dtls/demo/dtlsClient.js
+- The certificate and key are generated using openssl to test the dtls client and server.
 
-		a) In the node_modules folder, find dtls.
-		b) Inside Demo, one will find the dtlsserver and dtlsclient.
-		c) Run the dtls Server: dtls/demo/dtlsServer/dtlsController.js  
-		d) Connect using the dtls client: dtls/demo/dtlsClient.js
-		e) The certificate and key are generated using openssl to test the dtls client and server.
-
-To run the Client Install the below modules.
-
-a) bindings.
-b) microtime.
-c) log4js.
-d) nodeload.
-
-
-Changes in node_dtls 0.0.2:
-	a) Dont require any openssl changes.
-	b) Will Compile with latest node v0.10.12
-	
-
-
+## To run the Client Install the below modules.
+- bindings.
+- microtime.
+- log4js.
+- nodeload.
