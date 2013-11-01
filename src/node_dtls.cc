@@ -161,7 +161,7 @@ int generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
         {
         if (!RAND_bytes(cookie_secret, COOKIE_SECRET_LENGTH))
             {
-            printf("error setting random cookie secret\n");
+            fprintf(stderr, "error setting random cookie secret\n");
             return 0;
             }
         cookie_initialized = 1;
@@ -175,7 +175,7 @@ int generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
 
     if (buffer == NULL)
     {
-        printf("out of memory\n");
+        fprintf(stderr, "out of memory\n");
         return 0;
     }
 
@@ -266,7 +266,7 @@ int verify_cookie(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
 
     if (buffer == NULL)
     {
-        printf("out of memory\n");
+        fprintf(stderr, "out of memory\n");
         return 0;
     }
 
@@ -390,11 +390,11 @@ Handle<Value> SecureContext::Init(const Arguments& args) {
   OPENSSL_CONST SSL_METHOD *method = DTLSv1_method();
   //OPENSSL_CONST SSL_METHOD *method = DTLSv1_server_method();
 
-    fprintf(stderr, ">>>>>>>>>>>>>> Inside SecureContext::Init()\n");
+    //fprintf(stderr, ">>>>>>>>>>>>>> Inside SecureContext::Init()\n");
   if (args.Length() == 1 && args[0]->IsString()) {
     String::Utf8Value sslmethod(args[0]);
 
-    fprintf(stderr, ">>>>>>>>>>>>>> 1 sslmethod:[%s]\n", *sslmethod);
+    //fprintf(stderr, ">>>>>>>>>>>>>> 1 sslmethod:[%s]\n", *sslmethod);
 
     if (strcmp(*sslmethod, "SSLv2_method") == 0) {
 #ifndef OPENSSL_NO_SSL2
@@ -446,7 +446,7 @@ Handle<Value> SecureContext::Init(const Arguments& args) {
     else {
       return ThrowException(Exception::Error(String::New("Unknown method")));
     }
-    fprintf(stderr, ">>>>>>>>>>>>>> 2 sslmethod:[%s]\n", *sslmethod);
+    //fprintf(stderr, ">>>>>>>>>>>>>> 2 sslmethod:[%s]\n", *sslmethod);
   }
 
   /* replaced to support dtls - Gaffar */
@@ -764,7 +764,7 @@ Handle<Value> SecureContext::SetCiphers(const Arguments& args) {
   if (args.Length() != 1 || !args[0]->IsString()) {
     return ThrowException(Exception::TypeError(String::New("Bad parameter")));
   }
-  fprintf(stderr, ">>>>>>>>>> Inside SecureContext::SetCiphers()\n");
+  //fprintf(stderr, ">>>>>>>>>> Inside SecureContext::SetCiphers()\n");
 
   String::Utf8Value ciphers(args[0]);
   /* replaced to support dtls - Gaffar */
@@ -1284,7 +1284,7 @@ Handle<Value> Connection::New(const Arguments& args) {
 #endif
 
   SSL_set_bio(p->ssl_, p->bio_read_, p->bio_write_);
-  fprintf(stderr, "Connection::New ::> ctx:[%p], ssl:[%p], rbio:[%p], wbio:[%p]\n", sc->ctx_, p->ssl_, p->bio_read_, p->bio_write_);
+  //fprintf(stderr, "Connection::New ::> ctx:[%p], ssl:[%p], rbio:[%p], wbio:[%p]\n", sc->ctx_, p->ssl_, p->bio_read_, p->bio_write_);
   /* Added to support DTLS - Gaffar */
   //{{
   SSL_set_options(p->ssl_, SSL_OP_COOKIE_EXCHANGE);
@@ -2534,7 +2534,7 @@ class Cipher : public ObjectWrap {
         outString = Encode(out, out_len, BINARY);
       } else {
         fprintf(stderr, "node-dtls : Cipher .update encoding "
-                        "can be binary, hex or base64\n");
+			"can be binary, hex or base64\n");
       }
     }
 
