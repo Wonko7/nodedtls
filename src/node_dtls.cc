@@ -150,11 +150,6 @@ int generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
 {
     unsigned char *buffer, result[EVP_MAX_MD_SIZE];
     unsigned int length, resultlength;
-    union {
-        struct sockaddr_storage ss;
-        struct sockaddr_in6 s6;
-        struct sockaddr_in s4;
-    } peer;
 
     /* Initialize a random secret */
     if (!cookie_initialized)
@@ -248,11 +243,6 @@ int verify_cookie(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
 {
     unsigned char *buffer, result[EVP_MAX_MD_SIZE];
     unsigned int length, resultlength;
-    union {
-        struct sockaddr_storage ss;
-        struct sockaddr_in6 s6;
-        struct sockaddr_in s4;
-    } peer;
 
     /* If secret isn't initialized yet, the cookie can't be valid */
     if (!cookie_initialized)
