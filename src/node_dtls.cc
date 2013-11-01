@@ -170,21 +170,17 @@ int generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
 
     BIO *pRBio = SSL_get_rbio(ssl);
     BIO *pWBio = SSL_get_wbio(ssl);
-    int iRBio = *(unsigned int*)&pRBio;
-    int iWBio = *(unsigned int*)&pWBio;
-    length = 0;
-    length += sizeof(iRBio);
-    length += sizeof(iWBio);
+    length = 2 * sizeof (unsigned int);
     buffer = (unsigned char*) OPENSSL_malloc(length);
 
     if (buffer == NULL)
-        {
+    {
         printf("out of memory\n");
         return 0;
-        }
+    }
 
-    memcpy(buffer, &iRBio, sizeof(unsigned int));
-    memcpy((buffer + sizeof(unsigned int)), &iWBio, sizeof(unsigned int));
+    memcpy(buffer, pRBio, sizeof (unsigned int));
+    memcpy((buffer + sizeof (unsigned int)), pWBio, sizeof (unsigned int));
     //fprintf(stderr, ">>>>>>>>>>>>>> Printing SSL BIOs ::> rbio:[%x][%d], wbio:[%x][%d], len:[%d]\n", (unsigned int)pRBio, (unsigned int)pWBio, iRBio, iWBio, length);
 
 #if 0
@@ -249,9 +245,9 @@ int generate_cookie(SSL *ssl, unsigned char *cookie, unsigned int *cookie_len)
 }
 
 int verify_cookie(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
-    {
+{
     unsigned char *buffer, result[EVP_MAX_MD_SIZE];
-    unsigned int length = 0, resultlength;
+    unsigned int length, resultlength;
     union {
         struct sockaddr_storage ss;
         struct sockaddr_in6 s6;
@@ -265,21 +261,17 @@ int verify_cookie(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
 
     BIO *pRBio = SSL_get_rbio(ssl);
     BIO *pWBio = SSL_get_wbio(ssl);
-    int iRBio = *(unsigned int*)&pRBio;
-    int iWBio = *(unsigned int*)&pWBio;
-    length = 0;
-    length += sizeof(iRBio);
-    length += sizeof(iWBio);
+    length = 2 * sizeof (unsigned int);
     buffer = (unsigned char*) OPENSSL_malloc(length);
 
     if (buffer == NULL)
-        {
+    {
         printf("out of memory\n");
         return 0;
-        }
+    }
 
-    memcpy(buffer, &iRBio, sizeof(unsigned int));
-    memcpy((buffer + sizeof(unsigned int)), &iWBio, sizeof(unsigned int));
+    memcpy(buffer, pRBio, sizeof (unsigned int));
+    memcpy((buffer + sizeof (unsigned int)), pWBio, sizeof (unsigned int));
     //fprintf(stderr, ">>>>>>>>>>>>>> Printing SSL BIOs ::> rbio:[%x][%d], wbio:[%x][%d], len:[%d]\n", (unsigned int)pRBio, (unsigned int)pWBio, iRBio, iWBio, length);
 
 #if 0
@@ -340,7 +332,7 @@ int verify_cookie(SSL *ssl, unsigned char *cookie, unsigned int cookie_len)
         return 1;
 
     return 0;
-    }
+}
 
 int dtls_verify_callback (int ok, X509_STORE_CTX *ctx) {
     /* This function should ask the user
